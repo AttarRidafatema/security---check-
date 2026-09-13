@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Password Strength Analyzer</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #050b20;
+            color: white;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        /* HEADING */
+
+        .heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .heading h1 {
+            font-size: 42px;
+            margin: 10px;
+            background: linear-gradient(90deg, #a855f7, #22d3ee);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .heading p {
+            color: #9ca3af;
+            font-size: 16px;
+        }
+
+
+        /* COMMON BOX */
+
+        .box {
+            background: #09142f;
+            border: 1px solid #17447d;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+
+        /* PASSWORD INPUT */
+
+        .label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 12px;
+        }
+
+        .password-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .password-box input {
+            width: 100%;
+            padding: 16px 50px 16px 18px;
+            border-radius: 12px;
+            border: 1px solid #2462a5;
+            background: #050b20;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .password-box input:focus {
+            border-color: #8b5cf6;
+        }
+
+        /* EYE BUTTON */
+
+        .eye {
+            position: absolute;
+            right: 15px;
+            top: 14px;
+            font-size: 21px;
+            cursor: pointer;
+        }
+
+        /* ANALYZE BUTTON */
+
+        .analyze {
+            width: 150px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #8b3ffc, #139ee8);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .analyze:hover {
+            opacity: 0.9;
+        }
+
+
+        /* RESULT */
+
+        #result {
+            display: none;
+        }
+
+        .result-area {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+
+        /* STRENGTH CIRCLE */
+
+        .strength-circle {
+            width: 190px;
+            height: 190px;
+            border-radius: 50%;
+
+            background: conic-gradient(
+                #22d3ee 0%,
+                #202b49 0%
+            );
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            flex-shrink: 0;
+        }
+
+        .circle-center {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            background: #09142f;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #score {
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        .out-of {
+            color: #9ca3af;
+        }
+
+        .strength-text h2 {
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
+
+        .strength-text p {
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+
+        /* CHARACTER ANALYSIS */
+
+        .section-title {
+            font-size: 22px;
+            margin: 30px 0 15px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .card {
+            text-align: center;
+            background: #06102a;
+            border: 1px solid #17447d;
+            border-radius: 12px;
+            padding: 18px 5px;
+        }
+
+        .card-number {
+            font-size: 27px;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .card-name {
+            color: #b6c2df;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+
+        /* BOTTOM AREA */
+
+        .bottom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+
+        /* SUGGESTIONS */
+
+        .suggestions {
+            background: #06102a;
+            border: 1px solid #17447d;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .suggestion {
+            padding: 11px 5px;
+            border-bottom: 1px solid #173052;
+        }
+
+        .suggestion:last-child {
+            border-bottom: none;
+        }
+
+        .good {
+            color: #22d3a5;
+        }
+
+        .bad {
+            color: #ff4f91;
+        }
+
+
+        /* HISTORY */
+
+        .history {
+            background: #06102a;
+            border: 1px solid #17447d;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .history-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 8px;
+            border-bottom: 1px solid #173052;
+        }
+
+        .history-row:last-child {
+            border-bottom: none;
+        }
+
+        .weak {
+            color: #ff4f91;
+        }
+
+        .medium {
+            color: #fbbf24;
+        }
+
+        .strong {
+            color: #22d3a5;
+        }
+
+        .empty {
+            color: #71809f;
+            text-align: center;
+            padding: 15px;
+        }
+
+
+        /* MOBILE */
+
+        @media(max-width: 700px) {
+
+            .container {
+                width: 94%;
+            }
+
+            .heading h1 {
+                font-size: 30px;
+            }
+
+            .input-area {
+                flex-direction: column;
+            }
+
+            .analyze {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .result-area {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .bottom {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- HEADING -->
+
+    <div class="heading">
+
+        <h1>🔐 Password Strength Analyzer</h1>
+
+        <p>
+            Check how strong and secure your password is
+        </p>
+
+    </div>
+
+
+    <!-- PASSWORD BOX -->
+
+    <div class="box">
+
+        <div class="label">
+            Enter your password
+        </div>
+
+        <p style="color:#9ca3af;">
+            Minimum 6 characters
+        </p>
+
+
+        <div class="input-area">
+
+
+            <div class="password-box">
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password here..."
+                >
+
+                <span
+                    class="eye"
+                    id="eye"
+                    onclick="togglePassword()"
+                >
+                    👁️
+                </span>
+
+            </div>
+
+
+            <button
+                class="analyze"
+                onclick="analyzePassword()"
+            >
+                🔍 Analyze
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- RESULT -->
+
+    <div id="result">
+
+
+        <!-- STRENGTH -->
+
+        <div class="box">
+
+
+            <div class="result-area">
+
+
+                <!-- STRENGTH CIRCLE -->
+
+                <div>
+
+                    <div
+                        class="strength-circle"
+                        id="strengthCircle"
+                    >
+
+                        <div class="circle-center">
+
+                            <div id="score">
+                                0
+                            </div>
+
+                            <div class="out-of">
+                                / 100
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div style="text-align:center;margin-top:12px;">
+                        <b>Strength</b>
+                    </div>
+
+                </div>
+
+
+                <!-- STRENGTH MESSAGE -->
+
+                <div class="strength-text">
+
+                    <h2 id="strength">
+                        -
+                    </h2>
+
+                    <p id="description">
+                        Analyze your password to see the result.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- CHARACTER ANALYSIS -->
+
+            <div class="section-title">
+                🔎 Character Analysis
+            </div>
+
+
+            <div class="cards">
+
+
+                <div class="card">
+
+                    <div
+                        class="card-number"
+                        id="total"
+                    >
+                        0
+                    </div>
+
+                    <div class="card-name">
+                        Total
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div
+                        class="card-number"
+                        id="upper"
+                    >
+                        0
+                    </div>
+
+                    <div class="card-name">
+                        Uppercase
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div
+                        class="card-number"
+                        id="lower"
+                    >
+                        0
+                    </div>
+
+                    <div class="card-name">
+                        Lowercase
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div
+                        class="card-number"
+                        id="numbers"
+                    >
+                        0
+                    </div>
+
+                    <div class="card-name">
+                        Numbers
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div
+                        class="card-number"
+                        id="special"
+                    >
+                        0
+                    </div>
+
+                    <div class="card-name">
+                        Special
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SUGGESTIONS + HISTORY -->
+
+        <div class="bottom">
+
+
+            <!-- SUGGESTIONS -->
+
+            <div class="box">
+
+                <div class="section-title">
+                    💡 Suggestions
+                </div>
+
+
+                <div
+                    class="suggestions"
+                    id="suggestions"
+                >
+                </div>
+
+            </div>
+
+
+            <!-- HISTORY -->
+
+            <div class="box">
+
+                <div class="section-title">
+                    📋 Password Check History
+                </div>
+
+
+                <div
+                    class="history"
+                    id="history"
+                >
+
+                    <div class="empty">
+                        No password checks yet.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+    /* SHOW / HIDE PASSWORD */
+
+    function togglePassword() {
+
+        let password =
+            document.getElementById("password");
+
+        let eye =
+            document.getElementById("eye");
+
+
+        if (password.type === "password") {
+
+            password.type = "text";
+
+            eye.innerText = "🙈";
+
+        }
+
+        else {
+
+            password.type = "password";
+
+            eye.innerText = "👁️";
+
+        }
+
+    }
+
+
+
+    /* ANALYZE PASSWORD */
+
+    function analyzePassword() {
+
+
+        let password =
+            document.getElementById("password").value;
+
+
+        /* CHECK LENGTH */
+
+        if (password.length < 6) {
+
+            alert(
+                "Please enter at least 6 characters."
+            );
+
+            return;
+
+        }
+
+
+        /* CHARACTER COUNTERS */
+
+        let upper = 0;
+        let lower = 0;
+        let numbers = 0;
+        let special = 0;
+
+
+        /* CHECK EACH CHARACTER */
+
+        for (
+            let i = 0;
+            i < password.length;
+            i++
+        ) {
+
+            let ch = password[i];
+
+
+            if (
+                ch >= "A" &&
+                ch <= "Z"
+            ) {
+
+                upper++;
+
+            }
+
+            else if (
+                ch >= "a" &&
+                ch <= "z"
+            ) {
+
+                lower++;
+
+            }
+
+            else if (
+                ch >= "0" &&
+                ch <= "9"
+            ) {
+
+                numbers++;
+
+            }
+
+            else {
+
+                special++;
+
+            }
+
+        }
+
+
+
+        /* CALCULATE SCORE */
+
+        let score = 0;
+
+
+        if (password.length >= 6) {
+
+            score += 20;
+
+        }
+
+
+        if (password.length >= 10) {
+
+            score += 15;
+
+        }
+
+
+        if (upper > 0) {
+
+            score += 20;
+
+        }
+
+
+        if (lower > 0) {
+
+            score += 20;
+
+        }
+
+
+        if (numbers > 0) {
+
+            score += 15;
+
+        }
+
+
+        if (special > 0) {
+
+            score += 10;
+
+        }
+
+
+        if (score > 100) {
+
+            score = 100;
+
+        }
+
+
+
+        /* SHOW CHARACTER COUNTS */
+
+        document.getElementById("total")
+            .innerText = password.length;
+
+
+        document.getElementById("upper")
+            .innerText = upper;
+
+
+        document.getElementById("lower")
+            .innerText = lower;
+
+
+        document.getElementById("numbers")
+            .innerText = numbers;
+
+
+        document.getElementById("special")
+            .innerText = special;
+
+
+
+        /* SHOW SCORE */
+
+        document.getElementById("score")
+            .innerText = score;
+
+
+
+        /* STRENGTH */
+
+        let strength =
+            document.getElementById("strength");
+
+        let description =
+            document.getElementById("description");
+
+        let color;
+
+
+        if (score < 50) {
+
+            strength.innerText = "Weak";
+
+            strength.style.color =
+                "#ff4f91";
+
+            color = "#ff4f91";
+
+            description.innerText =
+                "Your password is weak. Add more characters and variety.";
+
+        }
+
+
+        else if (score < 80) {
+
+            strength.innerText = "Medium";
+
+            strength.style.color =
+                "#fbbf24";
+
+            color = "#fbbf24";
+
+            description.innerText =
+                "Your password is fairly good, but it can be stronger.";
+
+        }
+
+
+        else {
+
+            strength.innerText = "Strong";
+
+            strength.style.color =
+                "#22d3a5";
+
+            color = "#22d3a5";
+
+            description.innerText =
+                "Great! Your password has good character variety.";
+
+        }
+
+
+
+        /* STRENGTH CIRCLE */
+
+        document.getElementById(
+            "strengthCircle"
+        ).style.background =
+
+            "conic-gradient(" +
+            color + " " +
+            score + "%, #202b49 " +
+            score + "%)";
+
+
+
+        /* SUGGESTIONS */
+
+        let suggestions =
+            document.getElementById(
+                "suggestions"
+            );
+
+
+        suggestions.innerHTML = "";
+
+
+
+        if (upper == 0) {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion bad">❗ Add an uppercase letter (A-Z)</div>';
+
+        }
+
+        else {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion good">✓ Uppercase letter is present</div>';
+
+        }
+
+
+
+        if (lower == 0) {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion bad">❗ Add a lowercase letter (a-z)</div>';
+
+        }
+
+        else {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion good">✓ Lowercase letter is present</div>';
+
+        }
+
+
+
+        if (numbers == 0) {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion bad">❗ Add at least one number (0-9)</div>';
+
+        }
+
+        else {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion good">✓ Number is present</div>';
+
+        }
+
+
+
+        if (special == 0) {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion bad">❗ Add a special character (! @ # $ %)</div>';
+
+        }
+
+        else {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion good">✓ Special character is present</div>';
+
+        }
+
+
+
+        if (password.length < 10) {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion bad">❗ Try using 10 or more characters</div>';
+
+        }
+
+        else {
+
+            suggestions.innerHTML +=
+                '<div class="suggestion good">✓ Good password length</div>';
+
+        }
+
+
+
+        /* SHOW RESULT */
+
+        document.getElementById("result")
+            .style.display = "block";
+
+
+        /* ADD TO HISTORY */
+
+        addHistory(score);
+
+    }
+
+
+
+    /* HISTORY */
+
+    function addHistory(score) {
+
+
+        let history =
+            document.getElementById("history");
+
+
+        /* REMOVE EMPTY MESSAGE */
+
+        if (
+            history.innerText.includes(
+                "No password checks yet."
+            )
+        ) {
+
+            history.innerHTML = "";
+
+        }
+
+
+        let strength;
+        let className;
+
+
+        if (score < 50) {
+
+            strength = "Weak";
+
+            className = "weak";
+
+        }
+
+        else if (score < 80) {
+
+            strength = "Medium";
+
+            className = "medium";
+
+        }
+
+        else {
+
+            strength = "Strong";
+
+            className = "strong";
+
+        }
+
+
+        /* CREATE HISTORY ROW */
+
+        let row =
+            document.createElement("div");
+
+
+        row.className =
+            "history-row";
+
+
+        row.innerHTML =
+
+            '<span class="' +
+            className +
+            '">' +
+            strength +
+            '</span>' +
+
+            '<span>' +
+            score +
+            '/100' +
+            '</span>';
+
+
+        history.prepend(row);
+
+
+        /* KEEP LAST 5 */
+
+        if (
+            history.children.length > 5
+        ) {
+
+            history.removeChild(
+                history.lastChild
+            );
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+</html>
