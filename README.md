@@ -27,12 +27,13 @@ A web-based **Password Strength Analyzer** that checks the strength of a passwor
 ## 📸 Screenshots
 
 ### 1. Password Strength Analysis
-
-### 2. Password Masking
-
+![Screenshot 1](pass%201.png)
+### 2. Password Unmasking
+![Screenshot 2](pass%202.png)
 ### 3. Character Analysis 
-
+![Screenshot 3](pass%203.png)
 ### 4. Password Suggestions and Check History
+![Screenshot 4](pass%204.png)
 
 ## 🎯 Project Objective
 
